@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SUDO Academy — Cybersecurity & Programming</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0E14;
+    --bg-alt:#0E121B;
+    --surface:#131822;
+    --surface-2:#1A2130;
+    --border:#232B3A;
+    --border-soft:#1C2432;
+    --text:#E7EAF0;
+    --text-muted:#8B94A7;
+    --text-dim:#5C6579;
+    --amber:#FFB000;
+    --amber-dim:#B8850A;
+    --amber-soft:rgba(255,176,0,0.12);
+    --cyan:#5EEAD4;
+    --cyan-soft:rgba(94,234,212,0.1);
+    --red:#FF5D5D;
+    --red-soft:rgba(255,93,93,0.12);
+    --green:#4ADE80;
+    --radius:10px;
+    --mono:'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+    --sans:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    background-image:radial-gradient(circle at 1px 1px, rgba(255,255,255,0.035) 1px, transparent 0);
+    background-size:28px 28px;
+    pointer-events:none;
+    z-index:0;
+  }
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+  img{max-width:100%;display:block;}
+  ::selection{background:var(--amber);color:#0B0E14;}
+  input,textarea,select{
+    font-family:var(--sans);
+    background:var(--bg-alt);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:11px 13px;
+    border-radius:8px;
+    font-size:14.5px;
+    width:100%;
+    outline:none;
+    transition:border-color .15s ease;
+  }
+  input:focus,textarea:focus,select:focus{border-color:var(--amber);}
+  input::placeholder,textarea::placeholder{color:var(--text-dim);}
+  label{display:block;font-size:12.5px;color:var(--text-muted);margin-bottom:6px;font-family:var(--mono);letter-spacing:.02em;}
+  .field{margin-bottom:16px;}
+  :focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12.5px;
+    color:var(--amber);
+    letter-spacing:.04em;
+    display:flex;align-items:center;gap:8px;
+    margin-bottom:14px;
+  }
+  .eyebrow::before{content:"$";color:var(--text-dim);}
+  .eyebrow.root::before{content:"#";color:var(--red);}
+  h1,h2,h3{font-family:var(--mono);font-weight:700;letter-spacing:-0.01em;}
+  h1{font-size:clamp(32px,5vw,54px);line-height:1.08;}
+  h2{font-size:clamp(24px,3.4vw,34px);line-height:1.15;}
+  h3{font-size:18px;}
+  p{color:var(--text-muted);}
+  .muted{color:var(--text-muted);}
+  .dim{color:var(--text-dim);}
+
+  /* Buttons */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:12px 20px;border-radius:8px;font-size:14px;font-weight:600;
+    font-family:var(--mono);white-space:nowrap;
+    transition:transform .12s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease, opacity .12s ease;
+    border:1px solid transparent;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:var(--amber);color:#14100A;}
+  .btn-primary:hover{box-shadow:0 0 0 3px var(--amber-soft);}
+  .btn-outline{border-color:var(--border);color:var(--text);background:var(--surface);}
+  .btn-outline:hover{border-color:var(--cyan);color:var(--cyan);}
+  .btn-cyan{border-color:rgba(94,234,212,.4);color:var(--cyan);background:var(--cyan-soft);}
+  .btn-cyan:hover{border-color:var(--cyan);}
+  .btn-danger{border-color:rgba(255,93,93,.4);color:var(--red);background:var(--red-soft);}
+  .btn-danger:hover{border-color:var(--red);}
+  .btn-ghost{color:var(--text-muted);}
+  .btn-ghost:hover{color:var(--text);}
+  .btn-sm{padding:7px 12px;font-size:12.5px;border-radius:6px;}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+  .btn-block{width:100%;}
+
+  /* Nav */
+  header.nav{
+    position:sticky;top:0;z-index:40;
+    background:rgba(11,14,20,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border-soft);
+  }
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:66px;}
+  .logo{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-weight:700;font-size:16px;}
+  .logo .prompt{color:var(--amber);}
+  .logo-mark{
+    width:30px;height:30px;border-radius:7px;background:var(--surface-2);border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--amber);font-weight:800;
+  }
+  .nav-links{display:flex;align-items:center;gap:28px;font-family:var(--mono);font-size:13.5px;}
+  .nav-links a{color:var(--text-muted);transition:color .15s;padding:6px 0;}
+  .nav-links a:hover{color:var(--text);}
+  .nav-links a.active{color:var(--amber);}
+  .nav-right{display:flex;align-items:center;gap:12px;}
+  .nav-toggle{display:none;}
+  .badge{
+    font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.04em;
+    padding:2px 7px;border-radius:5px;border:1px solid;
+  }
+  .badge-admin{color:var(--red);border-color:rgba(255,93,93,.4);background:var(--red-soft);}
+  .badge-user{color:var(--cyan);border-color:rgba(94,234,212,.35);background:var(--cyan-soft);}
+  .user-chip{
+    display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--border);
+    padding:7px 12px;border-radius:8px;cursor:pointer;font-family:var(--mono);font-size:13px;position:relative;
+  }
+  .user-chip:hover{border-color:var(--border-soft);}
+  .dropdown{
+    position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--border);
+    border-radius:10px;min-width:190px;padding:6px;box-shadow:0 12px 32px rgba(0,0,0,.5);display:none;z-index:50;
+  }
+  .dropdown.open{display:block;}
+  .dropdown a,.dropdown button{
+    display:flex;width:100%;text-align:left;padding:9px 10px;border-radius:6px;font-size:13.5px;font-family:var(--sans);color:var(--text);
+  }
+  .dropdown a:hover,.dropdown button:hover{background:var(--surface-2);}
+  .dropdown hr{border:none;border-top:1px solid var(--border);margin:5px 0;}
+
+  /* Hero */
+  .hero{padding:74px 0 60px;position:relative;z-index:1;}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;}
+  .hero h1 span{color:var(--amber);}
+  .hero p.lead{font-size:16.5px;margin:20px 0 28px;max-width:480px;}
+  .hero-ctas{display:flex;gap:12px;flex-wrap:wrap;}
+  .terminal{
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;
+    box-shadow:0 24px 60px rgba(0,0,0,.45);
+  }
+  .term-bar{
+    display:flex;align-items:center;gap:7px;padding:11px 14px;background:var(--surface-2);border-bottom:1px solid var(--border);
+  }
+  .term-dot{width:10px;height:10px;border-radius:50%;}
+  .term-bar span.title{margin-left:8px;font-family:var(--mono);font-size:11.5px;color:var(--text-dim);}
+  .term-body{padding:20px;font-family:var(--mono);font-size:13.5px;min-height:210px;color:var(--text);}
+  .term-line{margin-bottom:6px;white-space:pre-wrap;word-break:break-word;}
+  .term-prompt{color:var(--cyan);}
+  .term-out{color:var(--green);}
+  .cursor{display:inline-block;width:8px;height:15px;background:var(--amber);vertical-align:middle;margin-left:2px;animation:blink 1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+
+  /* Feature strip */
+  .perms{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:70px;}
+  .perm-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;}
+  .perm-flag{font-family:var(--mono);color:var(--amber);font-size:13px;font-weight:700;margin-bottom:10px;display:block;}
+  .perm-card h3{margin-bottom:8px;}
+  .perm-card p{font-size:14px;}
+
+  section{position:relative;z-index:1;padding:70px 0;}
+  .section-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;gap:20px;flex-wrap:wrap;}
+
+  /* Course cards */
+  .course-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;}
+  .course-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;
+    display:flex;flex-direction:column;gap:12px;transition:border-color .15s, transform .15s;
+  }
+  .course-card:hover{border-color:var(--border-soft);transform:translateY(-2px);}
+  .course-top{display:flex;justify-content:space-between;align-items:flex-start;}
+  .course-icon{font-size:26px;}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;}
+  .chip{
+    font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.03em;padding:3px 7px;border-radius:5px;border:1px solid;
+    text-transform:uppercase;
+  }
+  .chip-published{color:var(--cyan);border-color:rgba(94,234,212,.35);background:var(--cyan-soft);}
+  .chip-draft{color:var(--text-dim);border-color:var(--border);background:var(--surface-2);}
+  .chip-open{color:var(--amber);border-color:rgba(255,176,0,.35);background:var(--amber-soft);}
+  .chip-closed{color:var(--red);border-color:rgba(255,93,93,.3);background:var(--red-soft);}
+  .chip-access{color:var(--green);border-color:rgba(74,222,128,.35);background:rgba(74,222,128,.1);}
+  .course-card h3{font-size:16.5px;}
+  .course-meta{font-family:var(--mono);font-size:11.5px;color:var(--text-dim);display:flex;gap:12px;}
+  .course-desc{font-size:13.5px;flex:1;}
+  .course-price{font-family:var(--mono);font-weight:700;color:var(--text);font-size:15px;}
+  .course-actions{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;}
+
+  /* Steps */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  .step{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;}
+  .step-num{font-family:var(--mono);color:var(--text-dim);font-size:13px;margin-bottom:10px;}
+  .step-num b{color:var(--amber);}
+
+  /* Contact / footer */
+  .contact-panel{
+    background:linear-gradient(135deg,var(--surface),var(--surface-2));border:1px solid var(--border);
+    border-radius:16px;padding:44px;display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;
+  }
+  footer{border-top:1px solid var(--border-soft);padding:40px 0;position:relative;z-index:1;}
+  .footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
+  .footer-inner p{font-size:13px;font-family:var(--mono);}
+
+  /* Auth / modals */
+  .overlay{
+    position:fixed;inset:0;background:rgba(6,8,12,.72);backdrop-filter:blur(3px);
+    display:flex;align-items:center;justify-content:center;z-index:100;padding:20px;
+  }
+  .modal{
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    width:100%;max-width:420px;padding:28px;max-height:90vh;overflow-y:auto;
+    animation:pop .15s ease;
+  }
+  .modal.wide{max-width:640px;}
+  @keyframes pop{from{opacity:0;transform:scale(.97);}to{opacity:1;transform:scale(1);}}
+  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+  .modal-close{color:var(--text-dim);font-size:20px;line-height:1;padding:4px;}
+  .modal-close:hover{color:var(--text);}
+  .tabs{display:flex;gap:4px;background:var(--bg-alt);border:1px solid var(--border);border-radius:9px;padding:4px;margin-bottom:22px;}
+  .tab-btn{flex:1;padding:9px;border-radius:6px;font-family:var(--mono);font-size:12.5px;color:var(--text-muted);text-align:center;}
+  .tab-btn.active{background:var(--amber);color:#14100A;font-weight:700;}
+  .form-error{color:var(--red);font-size:12.5px;font-family:var(--mono);margin-bottom:14px;display:none;}
+  .form-error.show{display:block;}
+  .form-note{font-size:12px;color:var(--text-dim);margin-top:14px;line-height:1.5;}
+
+  /* Dashboard */
+  .dash{padding:44px 0 90px;position:relative;z-index:1;}
+  .dash-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:12px;}
+  .dash-tabs{display:flex;gap:8px;margin:26px 0;border-bottom:1px solid var(--border-soft);flex-wrap:wrap;}
+  .dash-tab{padding:10px 4px;margin-right:22px;font-family:var(--mono);font-size:13px;color:var(--text-muted);border-bottom:2px solid transparent;}
+  .dash-tab.active{color:var(--amber);border-color:var(--amber);}
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:10px;}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;}
+  .stat-num{font-family:var(--mono);font-size:26px;font-weight:700;color:var(--amber);}
+  .stat-label{font-size:12px;color:var(--text-muted);font-family:var(--mono);margin-top:4px;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  thead th{
+    text-align:left;font-family:var(--mono);font-size:11px;color:var(--text-dim);text-transform:uppercase;
+    letter-spacing:.04em;padding:10px 12px;border-bottom:1px solid var(--border);
+  }
+  tbody td{padding:13px 12px;border-bottom:1px solid var(--border-soft);vertical-align:middle;}
+  tbody tr:hover{background:rgba(255,255,255,.015);}
+  .table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow-x:auto;}
+  .row-actions{display:flex;gap:6px;flex-wrap:wrap;}
+  .empty-state{
+    text-align:center;padding:60px 20px;background:var(--surface);border:1px dashed var(--border);border-radius:12px;
+  }
+  .empty-state h3{margin-bottom:8px;}
+  .empty-state p{margin-bottom:18px;}
+
+  .toast-container{position:fixed;bottom:22px;right:22px;z-index:200;display:flex;flex-direction:column;gap:10px;}
+  .toast{
+    background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--amber);
+    padding:13px 16px;border-radius:8px;font-size:13.5px;min-width:240px;max-width:340px;
+    box-shadow:0 10px 30px rgba(0,0,0,.4);animation:slidein .18s ease;
+  }
+  .toast.error{border-left-color:var(--red);}
+  .toast.success{border-left-color:var(--green);}
+  @keyframes slidein{from{opacity:0;transform:translateX(16px);}to{opacity:1;transform:translateX(0);}}
+
+  .whatsapp-inline{
+    display:flex;align-items:center;gap:8px;color:var(--green);font-family:var(--mono);font-size:13px;
+  }
+  .access-list{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+  .access-row{
+    display:flex;justify-content:space-between;align-items:center;background:var(--bg-alt);border:1px solid var(--border);
+    padding:10px 12px;border-radius:8px;font-size:13px;
+  }
+  .switch{
+    position:relative;width:38px;height:21px;background:var(--surface-2);border:1px solid var(--border);border-radius:20px;
+    flex-shrink:0;transition:background .15s;
+  }
+  .switch.on{background:var(--amber);border-color:var(--amber);}
+  .switch::after{
+    content:"";position:absolute;top:2px;left:2px;width:15px;height:15px;background:#fff;border-radius:50%;transition:transform .15s;
+  }
+  .switch.on::after{transform:translateX(17px);background:#14100A;}
+
+  .back-link{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:13px;color:var(--text-muted);margin-bottom:22px;}
+  .back-link:hover{color:var(--cyan);}
+  .detail-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:32px;align-items:start;}
+  .detail-panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px;}
+
+  @media (max-width:900px){
+    .hero-grid{grid-template-columns:1fr;}
+    .perms{grid-template-columns:1fr;}
+    .steps{grid-template-columns:1fr;}
+    .stat-grid{grid-template-columns:repeat(2,1fr);}
+    .detail-grid{grid-template-columns:1fr;}
+  }
+  @media (max-width:760px){
+    .nav-links{
+      position:absolute;top:66px;left:0;right:0;background:var(--bg);border-bottom:1px solid var(--border-soft);
+      flex-direction:column;align-items:flex-start;padding:16px 24px;gap:16px;display:none;
+    }
+    .nav-links.open{display:flex;}
+    .nav-toggle{display:block;font-size:20px;}
+    .nav-inner{position:relative;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important;transition-duration:0.001ms !important;}
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a href="#/" class="logo"><span class="logo-mark">#</span>sudo<span class="prompt">@</span>academy</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
+    <nav class="nav-links" id="navLinks">
+      <a href="#/" data-route="">Home</a>
+      <a href="#/courses" data-route="courses">Courses</a>
+      <a href="#/#about">About</a>
+      <a href="#/#contact">Contact</a>
+    </nav>
+    <div class="nav-right" id="navRight"></div>
+  </div>
+</header>
+
+<main id="app"></main>
+
+<div id="modalRoot"></div>
+<div class="toast-container" id="toastContainer"></div>
+
+<footer>
+  <div class="wrap footer-inner">
+    <p>root@sudo-academy:~$ echo "© 2026 SUDO Academy. All access logged."</p>
+    <p class="dim">Built for people who'd rather break things on purpose.</p>
+  </div>
+</footer>
+
+<script>
+/* ============================= CONFIG ============================= */
+const ADMIN_EMAIL = '202501259@pua.edu.eg'.toLowerCase();
+const WHATSAPP_NUMBER = '201515227612';
+const DATA_KEY = 'sudo-academy-data';
+const SESSION_KEY = 'session';
+
+/* Optional: fill these in to have a welcome email (with the account's login
+   email) sent automatically on signup, using a free EmailJS account.
+   See setup notes at the end of the file. Leave as-is to skip emailing. */
+const EMAILJS_PUBLIC_KEY = 'PASTE_YOUR_EMAILJS_PUBLIC_KEY';
+const EMAILJS_SERVICE_ID = 'PASTE_YOUR_EMAILJS_SERVICE_ID';
+const EMAILJS_TEMPLATE_ID = 'PASTE_YOUR_EMAILJS_TEMPLATE_ID';
+const EMAILJS_ENABLED = typeof emailjs !== 'undefined'
+  && !EMAILJS_PUBLIC_KEY.startsWith('PASTE_')
+  && !EMAILJS_SERVICE_ID.startsWith('PASTE_')
+  && !EMAILJS_TEMPLATE_ID.startsWith('PASTE_');
+if(EMAILJS_ENABLED){ emailjs.init({publicKey: EMAILJS_PUBLIC_KEY}); }
+
+async function sendWelcomeEmail(name, email){
+  if(!EMAILJS_ENABLED) return;
+  try{
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      to_name: name,
+      to_email: email,
+      login_email: email,
+      site_name: 'SUDO Academy',
+    });
+  }catch(e){
+    console.warn('Welcome email failed to send:', e);
+  }
+}
+
+/* ============================= STATE ============================= */
+let STATE = {
+  data: null,      // { users:{}, courses:{}, access:{} }
+  user: null,      // currently logged-in user object (or null)
+  loading: true,
+  adminTab: 'overview',
+  userTab: 'my-courses',
+};
+
+/* ============================= STORAGE HELPERS =============================
+   Two backends:
+   1) window.storage — Claude's built-in cross-device cloud storage. Only exists
+      when this page is opened inside a Claude.ai artifact. When present, all
+      visitors of the artifact share the same accounts/courses/access data.
+   2) localStorage fallback — used when this file is hosted on its own (a real
+      domain, opened as a local file, etc). This makes the site fully usable
+      standalone, but data then lives only in that one browser/device — it is
+      NOT shared between different visitors. See the note logged below.
+============================================================================ */
+const CLOUD_STORAGE_AVAILABLE = (typeof window !== 'undefined' && !!window.storage);
+
+async function rawGet(key, shared){
+  if(CLOUD_STORAGE_AVAILABLE){
+    const res = await window.storage.get(key, shared);
+    return res.value;
+  }
+  const val = localStorage.getItem(key);
+  if(val === null) throw new Error('not found');
+  return val;
+}
+async function rawSet(key, value, shared){
+  if(CLOUD_STORAGE_AVAILABLE){
+    await window.storage.set(key, value, shared);
+  } else {
+    localStorage.setItem(key, value);
+  }
+}
+async function rawDelete(key, shared){
+  if(CLOUD_STORAGE_AVAILABLE){
+    try{ await window.storage.delete(key, shared); }catch(e){}
+  } else {
+    localStorage.removeItem(key);
+  }
+}
+
+async function loadData(){
+  try{
+    const raw = await rawGet(DATA_KEY, true);
+    return JSON.parse(raw);
+  }catch(e){
+    const fresh = { users:{}, courses: seedCourses(), access:{} };
+    try{ await rawSet(DATA_KEY, JSON.stringify(fresh), true); }catch(e2){}
+    return fresh;
+  }
+}
+async function saveData(){
+  try{
+    await rawSet(DATA_KEY, JSON.stringify(STATE.data), true);
+    return true;
+  }catch(e){
+    showToast('Could not save — please try again.', 'error');
+    return false;
+  }
+}
+async function getSession(){
+  try{
+    const raw = await rawGet(SESSION_KEY, false);
+    return JSON.parse(raw);
+  }catch(e){ return null; }
+}
+async function setSession(email){
+  try{ await rawSet(SESSION_KEY, JSON.stringify({email}), false); }catch(e){}
+}
+async function clearSession(){
+  try{ await rawDelete(SESSION_KEY, false); }catch(e){}
+}
+
+function seedCourses(){
+  const now = Date.now();
+  const mk = (o,i)=>({ id:'c'+(now+i), status:'published', enrollment:'open', createdAt:now+i, lessons:[], ...o });
+  const withIntroLesson = (id)=>[{id:'l'+Date.now(), title:'Welcome & how this course works', type:'text',
+    body:'Welcome! This is where your lessons will appear once the instructor adds them.', createdAt:Date.now()}];
+  return Object.fromEntries([
+    mk({title:'Ethical Hacking Fundamentals',category:'Cybersecurity',level:'Beginner',price:'$59',duration:'6 weeks',icon:'🛡️',
+      description:'Learn how attackers think. Reconnaissance, scanning, exploitation basics, and reporting — all in a legal, controlled lab environment.',
+      lessons: withIntroLesson()},0),
+    mk({title:'Python for Security Automation',category:'Programming',level:'Intermediate',price:'$49',duration:'5 weeks',icon:'🐍',
+      description:'Write real tools: port scanners, log parsers, and automation scripts. For people who want Python to actually do something useful.'},1),
+    mk({title:'Web App Penetration Testing',category:'Cybersecurity',level:'Advanced',price:'$89',duration:'8 weeks',icon:'🕸️',
+      description:'SQLi, XSS, auth bypass, and business-logic flaws. You will break intentionally vulnerable apps and learn to write findings that get taken seriously.'},2),
+    mk({title:'Network Security & CTF Prep',category:'Cybersecurity',level:'Intermediate',price:'$69',duration:'6 weeks',icon:'🌐',
+      enrollment:'closed',
+      description:'Packet analysis, firewalls, and hands-on capture-the-flag challenges to get you competition-ready.'},3),
+    mk({title:'Full-Stack Development Bootcamp',category:'Programming',level:'Beginner',price:'$99',duration:'10 weeks',icon:'💻',
+      description:'From HTML to a deployed full-stack app. Build real projects for your portfolio, not just tutorials you forget.'},4),
+  ].map(c=>[c.id,c]));
+}
+
+/* ============================= UTIL ============================= */
+function escapeHtml(s){
+  return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function accessKey(email, courseId){ return email.toLowerCase()+'::'+courseId; }
+function hasAccess(email, courseId){
+  if(!email) return false;
+  return !!STATE.data.access[accessKey(email, courseId)];
+}
+function isAdmin(user){ return !!user && user.role === 'admin'; }
+function fmtDate(ts){
+  try{ return new Date(ts).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}); }catch(e){ return ''; }
+}
+async function sha256(text){
+  const enc = new TextEncoder().encode(text);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function randomSalt(){
+  const arr = new Uint8Array(16);
+  crypto.getRandomValues(arr);
+  return Array.from(arr).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function waLink(text){
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+}
+
+/* ============================= TOASTS ============================= */
+function showToast(msg, type=''){
+  const el = document.createElement('div');
+  el.className = 'toast' + (type ? ' '+type : '');
+  el.textContent = msg;
+  document.getElementById('toastContainer').appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .25s'; setTimeout(()=>el.remove(),250); }, 3400);
+}
+
+/* ============================= MODAL ============================= */
+function openModal(html, wide=false){
+  document.getElementById('modalRoot').innerHTML = `
+    <div class="overlay" id="overlay">
+      <div class="modal ${wide?'wide':''}">${html}</div>
+    </div>`;
+  document.getElementById('overlay').addEventListener('click', (e)=>{
+    if(e.target.id === 'overlay') closeModal();
+  });
+}
+function closeModal(){ document.getElementById('modalRoot').innerHTML = ''; }
+function confirmDialog(title, message, onConfirm, danger=true){
+  openModal(`
+    <div class="modal-head"><h3>${escapeHtml(title)}</h3><button class="modal-close" onclick="closeModal()">×</button></div>
+    <p style="margin-bottom:22px;">${escapeHtml(message)}</p>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-outline btn-sm" onclick="closeModal()">Cancel</button>
+      <button class="btn ${danger?'btn-danger':'btn-primary'} btn-sm" id="confirmBtn">Confirm</button>
+    </div>
+  `);
+  document.getElementById('confirmBtn').onclick = async ()=>{ closeModal(); await onConfirm(); };
+}
+
+/* ============================= AUTH ============================= */
+function openAuthModal(mode='login'){
+  renderAuthModal(mode);
+}
+function renderAuthModal(mode){
+  openModal(`
+    <div class="modal-head">
+      <h3>${mode==='login' ? 'Log in' : 'Create account'}</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn ${mode==='login'?'active':''}" onclick="renderAuthModal('login')">Log in</button>
+      <button class="tab-btn ${mode==='signup'?'active':''}" onclick="renderAuthModal('signup')">Sign up</button>
+    </div>
+    <div class="form-error" id="authError"></div>
+    <form id="authForm">
+      ${mode==='signup' ? `
+        <div class="field"><label>Full name</label><input type="text" id="authName" placeholder="e.g. Ahmed Sayed" required></div>
+      ` : ''}
+      <div class="field"><label>Email</label><input type="email" id="authEmail" placeholder="you@example.com" required></div>
+      <div class="field"><label>Password</label><input type="password" id="authPassword" placeholder="••••••••" required minlength="6"></div>
+      <button class="btn btn-primary btn-block" type="submit">${mode==='login' ? '$ login' : '$ create-account'}</button>
+    </form>
+    <p class="form-note">${mode==='login'
+      ? "No account yet? Switch to Sign up above."
+      : "After signing up, message us on WhatsApp to arrange payment for any course or book — we'll grant your access from there."}</p>
+  `);
+  document.getElementById('authForm').addEventListener('submit', (e)=>{
+    e.preventDefault();
+    mode === 'login' ? handleLogin() : handleSignup();
+  });
+}
+function authErr(msg){
+  const el = document.getElementById('authError');
+  if(!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+}
+async function handleSignup(){
+  const name = document.getElementById('authName').value.trim();
+  const email = document.getElementById('authEmail').value.trim().toLowerCase();
+  const password = document.getElementById('authPassword').value;
+  if(!name || !email || password.length < 6){ authErr('Fill every field — password needs 6+ characters.'); return; }
+  if(STATE.data.users[email]){ authErr('That email already has an account. Try logging in instead.'); return; }
+  const salt = randomSalt();
+  const hash = await sha256(salt + password);
+  const role = email === ADMIN_EMAIL ? 'admin' : 'user';
+  STATE.data.users[email] = { email, name, salt, hash, role, createdAt: Date.now() };
+  const ok = await saveData();
+  if(!ok) return;
+  STATE.user = STATE.data.users[email];
+  await setSession(email);
+  closeModal();
+  showToast(role==='admin' ? 'Welcome, root. Admin access granted.' : `Welcome, ${name}. Account created.`, 'success');
+  location.hash = '#/dashboard';
+  render();
+  sendWelcomeEmail(name, email);
+}
+async function handleLogin(){
+  const email = document.getElementById('authEmail').value.trim().toLowerCase();
+  const password = document.getElementById('authPassword').value;
+  const u = STATE.data.users[email];
+  if(!u){ authErr('No account with that email yet. Sign up instead.'); return; }
+  const hash = await sha256(u.salt + password);
+  if(hash !== u.hash){ authErr('Wrong password. Try again.'); return; }
+  STATE.user = u;
+  await setSession(email);
+  closeModal();
+  showToast(`Welcome back, ${u.name}.`, 'success');
+  location.hash = '#/dashboard';
+  render();
+}
+async function handleLogout(){
+  STATE.user = null;
+  await clearSession();
+  showToast('Logged out.');
+  location.hash = '#/';
+  render();
+}
+
+/* ============================= NAV ============================= */
+function renderNav(){
+  const route = currentRoute().view;
+  document.querySelectorAll('.nav-links a[data-route]').forEach(a=>{
+    a.classList.toggle('active', a.dataset.route === route);
+  });
+  const right = document.getElementById('navRight');
+  if(!STATE.user){
+    right.innerHTML = `
+      <button class="btn btn-ghost btn-sm" onclick="openAuthModal('login')">Log in</button>
+      <button class="btn btn-primary btn-sm" onclick="openAuthModal('signup')">Sign up</button>
+    `;
+    return;
+  }
+  const u = STATE.user;
+  right.innerHTML = `
+    <div class="user-chip" id="userChip">
+      <span class="badge ${u.role==='admin'?'badge-admin':'badge-user'}">${u.role==='admin'?'# root':'$ user'}</span>
+      <span>${escapeHtml(u.name.split(' ')[0])}</span>
+      <div class="dropdown" id="userDropdown">
+        <a href="#/dashboard">${u.role==='admin' ? 'Admin dashboard' : 'My dashboard'}</a>
+        <a href="#/courses">Browse courses</a>
+        <hr>
+        <button onclick="handleLogout()">Log out</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('userChip').addEventListener('click', (e)=>{
+    e.stopPropagation();
+    document.getElementById('userDropdown').classList.toggle('open');
+  });
+}
+document.addEventListener('click', ()=>{
+  const dd = document.getElementById('userDropdown');
+  if(dd) dd.classList.remove('open');
+});
+document.getElementById('navToggle').addEventListener('click', ()=>{
+  document.getElementById('navLinks').classList.toggle('open');
+});
+
+/* ============================= HERO TYPING ============================= */
+function typeTerminal(){
+  const body = document.getElementById('termBody');
+  if(!body) return;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const lines = [
+    {p:'guest@sudo-academy', t:'whoami'},
+    {o:'guest'},
+    {p:'guest@sudo-academy', t:'sudo enroll --course "Ethical Hacking"'},
+    {o:'[sudo] password for guest: ********'},
+    {o:'Access granted. Welcome to SUDO Academy.'},
+  ];
+  if(reduced){
+    body.innerHTML = lines.map(l => l.p
+      ? `<div class="term-line"><span class="term-prompt">${l.p}:~$</span> ${escapeHtml(l.t)}</div>`
+      : `<div class="term-line term-out">${escapeHtml(l.o)}</div>`).join('') + `<span class="cursor"></span>`;
+    return;
+  }
+  body.innerHTML = '';
+  let li = 0;
+  function nextLine(){
+    if(li >= lines.length) return;
+    const l = lines[li];
+    const div = document.createElement('div');
+    div.className = 'term-line';
+    body.appendChild(div);
+    if(l.p){
+      const full = `${l.p}:~$ ${l.t}`;
+      let ci = 0;
+      const iv = setInterval(()=>{
+        div.innerHTML = `<span class="term-prompt">${escapeHtml(l.p)}:~$</span> ${escapeHtml(l.t.slice(0, ci))}`;
+        ci++;
+        if(ci > l.t.length){ clearInterval(iv); li++; setTimeout(nextLine, 260); }
+      }, 22);
+    } else {
+      div.classList.add('term-out');
+      let ci = 0;
+      const iv = setInterval(()=>{
+        div.textContent = l.o.slice(0, ci);
+        ci++;
+        if(ci > l.o.length){ clearInterval(iv); li++; setTimeout(nextLine, 320); }
+      }, 16);
+    }
+  }
+  nextLine();
+}
+
+/* ============================= COURSE CARD ============================= */
+function courseCard(course, opts={}){
+  const {adminView=false} = opts;
+  const statusChip = course.status==='published'
+    ? `<span class="chip chip-published">published</span>` : `<span class="chip chip-draft">draft</span>`;
+  const enrollChip = course.enrollment==='open'
+    ? `<span class="chip chip-open">open</span>` : `<span class="chip chip-closed">closed</span>`;
+  const userHasAccess = STATE.user && hasAccess(STATE.user.email, course.id);
+
+  let actionsHtml = '';
+  if(adminView){
+    const lessonCount = (course.lessons||[]).length;
+    actionsHtml = `
+      <div class="course-actions">
+        <button class="btn btn-outline btn-sm" onclick="openCourseForm('${course.id}')">Edit</button>
+        <button class="btn btn-cyan btn-sm" onclick="openContentManager('${course.id}')">Content (${lessonCount})</button>
+        <button class="btn btn-cyan btn-sm" onclick="toggleCourseField('${course.id}','status')">${course.status==='published'?'Unpublish':'Publish'}</button>
+        <button class="btn btn-outline btn-sm" onclick="toggleCourseField('${course.id}','enrollment')">${course.enrollment==='open'?'Close enrollment':'Open enrollment'}</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteCourseConfirm('${course.id}')">Delete</button>
+      </div>`;
+  } else if(userHasAccess){
+    actionsHtml = `<div class="course-actions"><a class="btn btn-primary btn-sm btn-block" href="#/course/${course.id}">Open course →</a></div>`;
+  } else if(course.enrollment !== 'open'){
+    actionsHtml = `<div class="course-actions"><button class="btn btn-outline btn-sm btn-block" disabled>Enrollment closed</button></div>`;
+  } else {
+    actionsHtml = `<div class="course-actions"><a class="btn btn-primary btn-sm btn-block" href="#/course/${course.id}">View course →</a></div>`;
+  }
+
+  return `
+    <div class="course-card">
+      <div class="course-top">
+        <span class="course-icon">${course.icon||'📘'}</span>
+        <div class="chips">${statusChip}${enrollChip}${userHasAccess?'<span class="chip chip-access">access</span>':''}</div>
+      </div>
+      <h3>${escapeHtml(course.title)}</h3>
+      <div class="course-meta"><span>${escapeHtml(course.category)}</span><span>·</span><span>${escapeHtml(course.level)}</span><span>·</span><span>${escapeHtml(course.duration)}</span></div>
+      <p class="course-desc">${escapeHtml(course.description)}</p>
+      <div class="course-price">${escapeHtml(course.price)}</div>
+      ${actionsHtml}
+    </div>
+  `;
+}
+
+/* ============================= ROUTER ============================= */
+function currentRoute(){
+  let hash = location.hash.replace(/^#\/?/, '');
+  if(hash.startsWith('#')) hash = ''; // anchors like #/#about
+  const [path] = hash.split('?');
+  const parts = path.split('/').filter(Boolean);
+  if(parts[0] === 'course' && parts[1]) return {view:'course', param: parts[1]};
+  if(parts[0] === 'courses') return {view:'courses'};
+  if(parts[0] === 'dashboard') return {view:'dashboard'};
+  return {view:''};
+}
+
+async function render(){
+  const app = document.getElementById('app');
+  const route = currentRoute();
+
+  if(route.view === 'dashboard' && !STATE.user){
+    showToast('Log in to view your dashboard.', 'error');
+    location.hash = '#/';
+    openAuthModal('login');
+    return;
+  }
+
+  if(route.view === '') app.innerHTML = renderHome();
+  else if(route.view === 'courses') app.innerHTML = renderCoursesPage();
+  else if(route.view === 'course') app.innerHTML = renderCourseDetail(route.param);
+  else if(route.view === 'dashboard') app.innerHTML = isAdmin(STATE.user) ? renderAdminDashboard() : renderUserDashboard();
+
+  renderNav();
+  window.scrollTo({top:0});
+  if(route.view === '' ) setTimeout(typeTerminal, 80);
+
+  // handle in-page anchor scroll (#/#about)
+  const raw = location.hash;
+  if(raw.includes('#about') || raw.includes('#contact')){
+    const id = raw.includes('#contact') ? 'contact' : 'about';
+    setTimeout(()=>{ const el = document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth'}); }, 60);
+  }
+}
+
+/* ============================= HOME ============================= */
+function renderHome(){
+  const published = Object.values(STATE.data.courses).filter(c=>c.status==='published').sort((a,b)=>b.createdAt-a.createdAt).slice(0,3);
+  return `
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow">learn --track cybersecurity,programming</div>
+          <h1>From <span>user</span> to <span>root</span>.<br>Master security & code.</h1>
+          <p class="lead">SUDO Academy teaches practical cybersecurity and programming through hands-on labs — not just slides. Build real skills, build a real portfolio.</p>
+          <div class="hero-ctas">
+            <a href="#/courses" class="btn btn-primary">$ browse-courses</a>
+            <a href="${waLink('Hi SUDO Academy! I want to know more about your courses.')}" target="_blank" rel="noopener" class="btn btn-outline">Chat on WhatsApp</a>
+          </div>
+        </div>
+        <div class="terminal">
+          <div class="term-bar">
+            <div class="term-dot" style="background:#FF5D5D"></div>
+            <div class="term-dot" style="background:#FFB000"></div>
+            <div class="term-dot" style="background:#4ADE80"></div>
+            <span class="title">bash — sudo-academy</span>
+          </div>
+          <div class="term-body" id="termBody"></div>
+        </div>
+      </div>
+
+      <div class="wrap">
+        <div class="perms">
+          <div class="perm-card"><span class="perm-flag">chmod +r</span><h3>Readable, practical labs</h3><p>Every module pairs theory with a real lab environment you can break and rebuild.</p></div>
+          <div class="perm-card"><span class="perm-flag">chmod +w</span><h3>Writable, real projects</h3><p>You leave with working code and reports — things you can show, not just certificates.</p></div>
+          <div class="perm-card"><span class="perm-flag">chmod +x</span><h3>Executable skills</h3><p>CTFs, pentesting exercises, and automation scripts built for how the job actually works.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="courses-preview">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">ls ./courses --published</div>
+            <h2>Featured courses</h2>
+          </div>
+          <a href="#/courses" class="btn btn-outline btn-sm">View all courses →</a>
+        </div>
+        <div class="course-grid">
+          ${published.length ? published.map(c=>courseCard(c)).join('') : `<div class="empty-state" style="grid-column:1/-1;"><h3>No courses published yet</h3><p>Check back soon.</p></div>`}
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="wrap">
+        <div class="eyebrow">cat ./about.md</div>
+        <h2 style="margin-bottom:16px;">Why SUDO Academy</h2>
+        <p style="max-width:640px;font-size:15px;">We built SUDO Academy for people who learn by doing. Every course is designed around real tools and real scenarios — ethical hacking labs, automation scripts, and full applications — so what you learn here works the moment you leave here. No fluff, no padded certificates: just skills that hold up under a real sudo prompt.</p>
+      </div>
+    </section>
+
+    <section id="how">
+      <div class="wrap">
+        <div class="eyebrow">man enroll</div>
+        <h2 style="margin-bottom:28px;">How enrollment works</h2>
+        <div class="steps">
+          <div class="step"><div class="step-num"><b>01</b> / create account</div><h3>Sign up on the site</h3><p>Make a free account — it's how we track your access and progress.</p></div>
+          <div class="step"><div class="step-num"><b>02</b> / message us</div><h3>Reach out on WhatsApp</h3><p>Tell us which course or book you want. We'll sort out payment together.</p></div>
+          <div class="step"><div class="step-num"><b>03</b> / get access</div><h3>Start learning</h3><p>Once payment is confirmed, we grant access on your account — instantly unlocked.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="wrap">
+        <div class="contact-panel">
+          <div>
+            <div class="eyebrow root">sudo grant-access --user you</div>
+            <h2>Ready to enroll in a course or grab a book?</h2>
+            <p style="margin-top:8px;">Message us directly — we handle payment and access over WhatsApp.</p>
+          </div>
+          <a href="${waLink('Hi SUDO Academy! I want to enroll in a course.')}" target="_blank" rel="noopener" class="btn btn-primary">💬 Message +20 151 522 7612</a>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+/* ============================= COURSES PAGE ============================= */
+function renderCoursesPage(){
+  const all = Object.values(STATE.data.courses).filter(c=>c.status==='published').sort((a,b)=>b.createdAt-a.createdAt);
+  return `
+    <section class="dash">
+      <div class="wrap">
+        <div class="eyebrow">ls -la ./courses</div>
+        <h1 style="font-size:32px;">All courses</h1>
+        <p style="margin:10px 0 30px;">Every published track, cybersecurity and programming alike.</p>
+        <div class="course-grid">
+          ${all.length ? all.map(c=>courseCard(c)).join('') : `<div class="empty-state" style="grid-column:1/-1;"><h3>Nothing published yet</h3><p>New courses are on the way.</p></div>`}
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+/* ============================= COURSE DETAIL ============================= */
+function renderCourseDetail(id){
+  const c = STATE.data.courses[id];
+  if(!c || (c.status !== 'published' && !isAdmin(STATE.user))){
+    return `<section class="dash"><div class="wrap"><div class="empty-state"><h3>Course not found</h3><p>It may have been removed or unpublished.</p><a href="#/courses" class="btn btn-primary btn-sm">Back to courses</a></div></div></section>`;
+  }
+  const userHasAccess = STATE.user && hasAccess(STATE.user.email, c.id);
+  let cta = '';
+  let lessonsHtml = '';
+  if(userHasAccess){
+    const lessons = c.lessons || [];
+    cta = `<div class="empty-state" style="text-align:left;padding:18px;">
+      <h3 style="margin-bottom:4px;">✅ You have access</h3>
+      <p style="margin-bottom:0;">Scroll down for your lessons.</p>
+    </div>`;
+    lessonsHtml = `
+      <div style="margin-top:34px;">
+        <div class="eyebrow">cat ./lessons</div>
+        <h2 style="margin-bottom:18px;">Course content</h2>
+        ${lessons.length ? `<div class="access-list">${lessons.map((l,i)=>{
+          if(l.type==='text'){
+            return `<div class="access-row" style="align-items:flex-start;flex-direction:column;gap:8px;">
+              <div><span class="dim" style="font-family:var(--mono);font-size:11px;">Lesson ${i+1} · text</span><br><strong>${escapeHtml(l.title)}</strong></div>
+              <p style="font-size:13.5px;white-space:pre-wrap;">${escapeHtml(l.body)}</p>
+            </div>`;
+          }
+          const icon = l.type==='video' ? '🎬' : l.type==='file' ? '📎' : '🔗';
+          const cta2 = l.type==='file' ? 'Download' : l.type==='video' ? 'Watch' : 'Open';
+          return `<div class="access-row">
+            <span>${icon} <span class="dim" style="font-family:var(--mono);font-size:11px;">Lesson ${i+1}</span><br>${escapeHtml(l.title)}</span>
+            <a class="btn btn-cyan btn-sm" target="_blank" rel="noopener" href="${escapeHtml(l.url)}">${cta2} →</a>
+          </div>`;
+        }).join('')}</div>` : `<div class="empty-state"><p>Materials for this course haven't been added yet — check back soon.</p></div>`}
+      </div>
+    `;
+  } else if(!STATE.user){
+    cta = `<button class="btn btn-primary btn-block" onclick="openAuthModal('signup')">Create an account to enroll</button>`;
+  } else if(c.enrollment !== 'open'){
+    cta = `<button class="btn btn-outline btn-block" disabled>Enrollment closed for this cohort</button>`;
+  } else {
+    const enrollMsg = 'Hi SUDO Academy! I would like to enroll in "' + c.title + '". My account email: ' + STATE.user.email;
+    cta = `<a class="btn btn-primary btn-block" target="_blank" rel="noopener" href="${waLink(enrollMsg)}">💬 Chat on WhatsApp to enroll</a>
+      <p class="dim" style="font-size:12px;margin-top:10px;">We'll grant access on your account (${escapeHtml(STATE.user.email)}) once payment is confirmed.</p>`;
+  }
+  return `
+    <section class="dash">
+      <div class="wrap">
+        <a href="#/courses" class="back-link">← back to courses</a>
+        <div class="detail-grid">
+          <div>
+            <div class="chips" style="margin-bottom:14px;">
+              <span class="chip chip-published">${c.status}</span>
+              <span class="chip ${c.enrollment==='open'?'chip-open':'chip-closed'}">${c.enrollment}</span>
+            </div>
+            <h1 style="font-size:30px;margin-bottom:12px;">${c.icon||'📘'} ${escapeHtml(c.title)}</h1>
+            <div class="course-meta" style="margin-bottom:20px;"><span>${escapeHtml(c.category)}</span><span>·</span><span>${escapeHtml(c.level)}</span><span>·</span><span>${escapeHtml(c.duration)}</span></div>
+            <p style="font-size:15px;line-height:1.7;">${escapeHtml(c.description)}</p>
+            ${lessonsHtml}
+          </div>
+          <div class="detail-panel">
+            <div class="course-price" style="font-size:22px;margin-bottom:16px;">${escapeHtml(c.price)}</div>
+            ${cta}
+          </div>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+/* ============================= USER DASHBOARD ============================= */
+function renderUserDashboard(){
+  const u = STATE.user;
+  const myCourses = Object.values(STATE.data.courses).filter(c => hasAccess(u.email, c.id));
+  const browse = Object.values(STATE.data.courses).filter(c=>c.status==='published' && !hasAccess(u.email, c.id));
+  return `
+    <section class="dash">
+      <div class="wrap">
+        <div class="eyebrow">whoami</div>
+        <div class="dash-head">
+          <div><h1 style="font-size:30px;">Hey, ${escapeHtml(u.name)} <span class="badge badge-user" style="margin-left:6px;">$ user</span></h1><p style="margin-top:6px;">${escapeHtml(u.email)} · joined ${fmtDate(u.createdAt)}</p></div>
+        </div>
+        <div class="dash-tabs">
+          <div class="dash-tab ${STATE.userTab==='my-courses'?'active':''}" onclick="setUserTab('my-courses')">My courses (${myCourses.length})</div>
+          <div class="dash-tab ${STATE.userTab==='browse'?'active':''}" onclick="setUserTab('browse')">Browse more</div>
+        </div>
+        ${STATE.userTab==='my-courses' ? `
+          <div class="course-grid">
+            ${myCourses.length ? myCourses.map(c=>courseCard(c)).join('') : `
+              <div class="empty-state" style="grid-column:1/-1;">
+                <h3>No courses yet</h3>
+                <p>Once you arrange payment on WhatsApp, your access will show up here.</p>
+                <a class="btn btn-primary btn-sm" target="_blank" rel="noopener" href="${waLink('Hi SUDO Academy! I want to enroll in a course.')}">💬 Message us on WhatsApp</a>
+              </div>`}
+          </div>
+        ` : `
+          <div class="course-grid">
+            ${browse.length ? browse.map(c=>courseCard(c)).join('') : `<div class="empty-state" style="grid-column:1/-1;"><h3>You have access to everything published</h3><p>Nice.</p></div>`}
+          </div>
+        `}
+      </div>
+    </section>
+  `;
+}
+function setUserTab(tab){ STATE.userTab = tab; render(); }
+
+/* ============================= ADMIN DASHBOARD ============================= */
+function renderAdminDashboard(){
+  const data = STATE.data;
+  const courses = Object.values(data.courses).sort((a,b)=>b.createdAt-a.createdAt);
+  const users = Object.values(data.users).sort((a,b)=>a.createdAt-b.createdAt);
+  const totalAccess = Object.keys(data.access).filter(k=>data.access[k]).length;
+
+  return `
+    <section class="dash">
+      <div class="wrap">
+        <div class="eyebrow root">whoami --privileged</div>
+        <div class="dash-head">
+          <h1 style="font-size:30px;">Admin dashboard <span class="badge badge-admin" style="margin-left:6px;"># root</span></h1>
+        </div>
+        <div class="dash-tabs">
+          <div class="dash-tab ${STATE.adminTab==='overview'?'active':''}" onclick="setAdminTab('overview')">Overview</div>
+          <div class="dash-tab ${STATE.adminTab==='courses'?'active':''}" onclick="setAdminTab('courses')">Courses (${courses.length})</div>
+          <div class="dash-tab ${STATE.adminTab==='users'?'active':''}" onclick="setAdminTab('users')">Users (${users.length})</div>
+        </div>
+        ${STATE.adminTab==='overview' ? renderAdminOverview(courses, users, totalAccess) : ''}
+        ${STATE.adminTab==='courses' ? renderAdminCourses(courses) : ''}
+        ${STATE.adminTab==='users' ? renderAdminUsers(users) : ''}
+      </div>
+    </section>
+  `;
+}
+function setAdminTab(tab){ STATE.adminTab = tab; render(); }
+
+function renderAdminOverview(courses, users, totalAccess){
+  const published = courses.filter(c=>c.status==='published').length;
+  return `
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-num">${users.length}</div><div class="stat-label">total users</div></div>
+      <div class="stat-card"><div class="stat-num">${courses.length}</div><div class="stat-label">total courses</div></div>
+      <div class="stat-card"><div class="stat-num">${published}</div><div class="stat-label">published</div></div>
+      <div class="stat-card"><div class="stat-num">${totalAccess}</div><div class="stat-label">access grants</div></div>
+    </div>
+    <div style="margin-top:24px;" class="table-wrap">
+      <table>
+        <thead><tr><th>Recent users</th><th>Role</th><th>Joined</th></tr></thead>
+        <tbody>
+          ${users.slice(-5).reverse().map(u=>`
+            <tr><td>${escapeHtml(u.name)}<br><span class="dim" style="font-size:12px;">${escapeHtml(u.email)}</span></td>
+            <td><span class="badge ${u.role==='admin'?'badge-admin':'badge-user'}">${u.role}</span></td>
+            <td>${fmtDate(u.createdAt)}</td></tr>
+          `).join('') || `<tr><td colspan="3" class="dim">No users yet.</td></tr>`}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderAdminCourses(courses){
+  return `
+    <div class="section-head" style="margin-bottom:18px;">
+      <p class="dim" style="font-family:var(--mono);font-size:12.5px;">manage every course — publish, open enrollment, or remove.</p>
+      <button class="btn btn-primary btn-sm" onclick="openCourseForm(null)">+ New course</button>
+    </div>
+    <div class="course-grid">
+      ${courses.length ? courses.map(c=>courseCard(c,{adminView:true})).join('') : `
+        <div class="empty-state" style="grid-column:1/-1;"><h3>No courses yet</h3><p>Create your first course to get started.</p><button class="btn btn-primary btn-sm" onclick="openCourseForm(null)">+ New course</button></div>`}
+    </div>
+  `;
+}
+
+function renderAdminUsers(users){
+  return `
+    <p class="dim" style="font-family:var(--mono);font-size:12.5px;margin-bottom:18px;">promote to admin, revoke access, or grant course access per user.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>User</th><th>Role</th><th>Joined</th><th>Actions</th></tr></thead>
+        <tbody>
+          ${users.map(u=>{
+            const isSelf = STATE.user.email === u.email;
+            return `
+            <tr>
+              <td>${escapeHtml(u.name)}<br><span class="dim" style="font-size:12px;">${escapeHtml(u.email)}</span></td>
+              <td><span class="badge ${u.role==='admin'?'badge-admin':'badge-user'}">${u.role==='admin'?'# admin':'$ user'}</span></td>
+              <td>${fmtDate(u.createdAt)}</td>
+              <td>
+                <div class="row-actions">
+                  <button class="btn btn-outline btn-sm" onclick="openAccessManager('${u.email}')">Manage access</button>
+                  <button class="btn btn-cyan btn-sm" ${isSelf?'disabled':''} onclick="setUserRole('${u.email}','${u.role==='admin'?'user':'admin'}')">${u.role==='admin'?'Revoke admin':'Make admin'}</button>
+                  <button class="btn btn-danger btn-sm" ${isSelf?'disabled':''} onclick="deleteUserConfirm('${u.email}')">Delete</button>
+                </div>
+              </td>
+            </tr>`;
+          }).join('') || `<tr><td colspan="4" class="dim">No users yet.</td></tr>`}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* ---- Admin: course CRUD ---- */
+function openCourseForm(id){
+  const c = id ? STATE.data.courses[id] : null;
+  openModal(`
+    <div class="modal-head"><h3>${c ? 'Edit course' : 'New course'}</h3><button class="modal-close" onclick="closeModal()">×</button></div>
+    <div class="form-error" id="courseFormError"></div>
+    <form id="courseForm">
+      <div class="field"><label>Title</label><input id="cf-title" value="${c?escapeHtml(c.title):''}" required></div>
+      <div class="field"><label>Icon (emoji)</label><input id="cf-icon" value="${c?escapeHtml(c.icon||''):'📘'}" maxlength="4"></div>
+      <div class="field"><label>Category</label><input id="cf-category" value="${c?escapeHtml(c.category):''}" placeholder="Cybersecurity / Programming" required></div>
+      <div class="field"><label>Level</label>
+        <select id="cf-level">
+          ${['Beginner','Intermediate','Advanced'].map(l=>`<option ${c&&c.level===l?'selected':''}>${l}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field"><label>Duration</label><input id="cf-duration" value="${c?escapeHtml(c.duration):''}" placeholder="e.g. 6 weeks" required></div>
+      <div class="field"><label>Price</label><input id="cf-price" value="${c?escapeHtml(c.price):''}" placeholder="e.g. $59 or Contact us" required></div>
+      <div class="field"><label>Description</label><textarea id="cf-desc" rows="4" required>${c?escapeHtml(c.description):''}</textarea></div>
+      <button class="btn btn-primary btn-block" type="submit">${c ? 'Save changes' : 'Create course'}</button>
+    </form>
+  `, true);
+  document.getElementById('courseForm').addEventListener('submit', (e)=>{
+    e.preventDefault();
+    saveCourseForm(id);
+  });
+}
+async function saveCourseForm(id){
+  const title = document.getElementById('cf-title').value.trim();
+  const icon = document.getElementById('cf-icon').value.trim() || '📘';
+  const category = document.getElementById('cf-category').value.trim();
+  const level = document.getElementById('cf-level').value;
+  const duration = document.getElementById('cf-duration').value.trim();
+  const price = document.getElementById('cf-price').value.trim();
+  const description = document.getElementById('cf-desc').value.trim();
+  if(!title || !category || !duration || !price || !description){
+    document.getElementById('courseFormError').textContent = 'Every field is required.';
+    document.getElementById('courseFormError').classList.add('show');
+    return;
+  }
+  if(id){
+    Object.assign(STATE.data.courses[id], {title, icon, category, level, duration, price, description});
+  }else{
+    const newId = 'c'+Date.now();
+    STATE.data.courses[newId] = {id:newId, title, icon, category, level, duration, price, description, status:'draft', enrollment:'closed', createdAt:Date.now(), lessons:[]};
+  }
+  const ok = await saveData();
+  if(!ok) return;
+  closeModal();
+  showToast(id ? 'Course updated.' : 'Course created as draft — publish it when ready.', 'success');
+  render();
+}
+async function toggleCourseField(id, field){
+  const c = STATE.data.courses[id];
+  if(!c) return;
+  if(field === 'status') c.status = c.status==='published' ? 'draft' : 'published';
+  if(field === 'enrollment') c.enrollment = c.enrollment==='open' ? 'closed' : 'open';
+  const ok = await saveData();
+  if(!ok) return;
+  showToast(`${c.title} — ${field} set to ${c[field]}.`, 'success');
+  render();
+}
+function deleteCourseConfirm(id){
+  const c = STATE.data.courses[id];
+  confirmDialog('Delete course?', `"${c.title}" will be permanently removed, including everyone's access to it. This can't be undone.`, async ()=>{
+    delete STATE.data.courses[id];
+    Object.keys(STATE.data.access).forEach(k=>{ if(k.endsWith('::'+id)) delete STATE.data.access[k]; });
+    const ok = await saveData();
+    if(!ok) return;
+    showToast('Course deleted.', 'success');
+    render();
+  });
+}
+
+/* ---- Admin: course content (lessons) ---- */
+const LESSON_TYPE_LABEL = {text:'📝 Text lesson', video:'🎬 Video link', link:'🔗 Resource link', file:'📎 Downloadable file'};
+function openContentManager(courseId){
+  const c = STATE.data.courses[courseId];
+  if(!c) return;
+  const lessons = c.lessons || [];
+  openModal(`
+    <div class="modal-head"><h3>Content — ${escapeHtml(c.title)}</h3><button class="modal-close" onclick="closeModal()">×</button></div>
+    <p class="dim" style="font-size:12.5px;margin-bottom:14px;">Only visible to people you've granted access to this course.</p>
+    <div class="access-list" id="lessonList">
+      ${lessons.length ? lessons.map((l,i)=>`
+        <div class="access-row" style="align-items:flex-start;">
+          <div style="flex:1;">
+            <div style="font-size:11px;color:var(--text-dim);font-family:var(--mono);margin-bottom:2px;">${LESSON_TYPE_LABEL[l.type]||l.type}</div>
+            <div>${escapeHtml(l.title)}</div>
+          </div>
+          <div class="row-actions">
+            <button class="btn btn-outline btn-sm" ${i===0?'disabled':''} onclick="moveLesson('${courseId}','${l.id}',-1)">↑</button>
+            <button class="btn btn-outline btn-sm" ${i===lessons.length-1?'disabled':''} onclick="moveLesson('${courseId}','${l.id}',1)">↓</button>
+            <button class="btn btn-outline btn-sm" onclick="openLessonForm('${courseId}','${l.id}')">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteLessonConfirm('${courseId}','${l.id}')">Delete</button>
+          </div>
+        </div>
+      `).join('') : `<p class="dim">No lessons yet — add the first one below.</p>`}
+    </div>
+    <button class="btn btn-primary btn-block" style="margin-top:16px;" onclick="openLessonForm('${courseId}', null)">+ Add lesson</button>
+  `, true);
+}
+function openLessonForm(courseId, lessonId){
+  const c = STATE.data.courses[courseId];
+  const l = lessonId ? (c.lessons||[]).find(x=>x.id===lessonId) : null;
+  openModal(`
+    <div class="modal-head"><h3>${l?'Edit lesson':'Add lesson'}</h3><button class="modal-close" onclick="closeModal()">×</button></div>
+    <div class="form-error" id="lessonFormError"></div>
+    <form id="lessonForm">
+      <div class="field"><label>Lesson title</label><input id="lf-title" value="${l?escapeHtml(l.title):''}" placeholder="e.g. Setting up your lab" required></div>
+      <div class="field"><label>Type</label>
+        <select id="lf-type" onchange="renderLessonBodyField()">
+          ${Object.entries(LESSON_TYPE_LABEL).map(([v,label])=>`<option value="${v}" ${l&&l.type===v?'selected':''}>${label}</option>`).join('')}
+        </select>
+      </div>
+      <div id="lessonBodyField"></div>
+      <button class="btn btn-primary btn-block" type="submit">${l?'Save lesson':'Add lesson'}</button>
+    </form>
+    <button class="btn btn-ghost btn-sm" style="margin-top:10px;" onclick="openContentManager('${courseId}')">← back to content list</button>
+  `, true);
+  window.__editingLesson = l;
+  renderLessonBodyField();
+  document.getElementById('lessonForm').addEventListener('submit', (e)=>{
+    e.preventDefault();
+    saveLessonForm(courseId, lessonId);
+  });
+}
+function renderLessonBodyField(){
+  const type = document.getElementById('lf-type').value;
+  const l = window.__editingLesson;
+  const host = document.getElementById('lessonBodyField');
+  if(type === 'text'){
+    host.innerHTML = `<div class="field"><label>Lesson text</label><textarea id="lf-body" rows="6" placeholder="Write the lesson content here...">${l&&l.body?escapeHtml(l.body):''}</textarea></div>`;
+  } else {
+    const placeholder = type==='video' ? 'https://youtube.com/watch?v=...' : type==='file' ? 'https://drive.google.com/...' : 'https://...';
+    host.innerHTML = `<div class="field"><label>${type==='video'?'Video URL':type==='file'?'File URL':'Link URL'}</label><input id="lf-url" value="${l&&l.url?escapeHtml(l.url):''}" placeholder="${placeholder}"></div>`;
+  }
+}
+async function saveLessonForm(courseId, lessonId){
+  const c = STATE.data.courses[courseId];
+  const title = document.getElementById('lf-title').value.trim();
+  const type = document.getElementById('lf-type').value;
+  const body = document.getElementById('lf-body') ? document.getElementById('lf-body').value.trim() : '';
+  const url = document.getElementById('lf-url') ? document.getElementById('lf-url').value.trim() : '';
+  if(!title || (type==='text' && !body) || (type!=='text' && !url)){
+    const err = document.getElementById('lessonFormError');
+    err.textContent = 'Fill in the title and content.';
+    err.classList.add('show');
+    return;
+  }
+  c.lessons = c.lessons || [];
+  if(lessonId){
+    const l = c.lessons.find(x=>x.id===lessonId);
+    Object.assign(l, {title, type, body, url});
+  } else {
+    c.lessons.push({id:'l'+Date.now(), title, type, body, url, createdAt:Date.now()});
+  }
+  const ok = await saveData();
+  if(!ok) return;
+  showToast('Lesson saved.', 'success');
+  openContentManager(courseId);
+  render();
+}
+function deleteLessonConfirm(courseId, lessonId){
+  confirmDialog('Delete lesson?', 'This lesson will be removed from the course.', async ()=>{
+    const c = STATE.data.courses[courseId];
+    c.lessons = (c.lessons||[]).filter(l=>l.id!==lessonId);
+    const ok = await saveData();
+    if(!ok) return;
+    openContentManager(courseId);
+    render();
+  });
+}
+async function moveLesson(courseId, lessonId, dir){
+  const c = STATE.data.courses[courseId];
+  const arr = c.lessons || [];
+  const i = arr.findIndex(l=>l.id===lessonId);
+  const j = i + dir;
+  if(i<0 || j<0 || j>=arr.length) return;
+  [arr[i], arr[j]] = [arr[j], arr[i]];
+  const ok = await saveData();
+  if(!ok) return;
+  openContentManager(courseId);
+}
+
+/* ---- Admin: user management ---- */
+async function setUserRole(email, role){
+  const u = STATE.data.users[email];
+  if(!u) return;
+  u.role = role;
+  const ok = await saveData();
+  if(!ok) return;
+  showToast(`${u.name} is now ${role === 'admin' ? 'an admin' : 'a regular user'}.`, 'success');
+  render();
+}
+function deleteUserConfirm(email){
+  const u = STATE.data.users[email];
+  confirmDialog('Delete user?', `${u.name}'s account (${u.email}) and all their course access will be removed. This can't be undone.`, async ()=>{
+    delete STATE.data.users[email];
+    Object.keys(STATE.data.access).forEach(k=>{ if(k.startsWith(email+'::')) delete STATE.data.access[k]; });
+    const ok = await saveData();
+    if(!ok) return;
+    showToast('User deleted.', 'success');
+    render();
+  });
+}
+function openAccessManager(email){
+  const u = STATE.data.users[email];
+  const courses = Object.values(STATE.data.courses).sort((a,b)=>a.title.localeCompare(b.title));
+  openModal(`
+    <div class="modal-head"><h3>Course access — ${escapeHtml(u.name)}</h3><button class="modal-close" onclick="closeModal()">×</button></div>
+    <p class="dim" style="font-size:13px;margin-bottom:6px;">Toggle access after they've paid via WhatsApp.</p>
+    <div class="access-list">
+      ${courses.length ? courses.map(c=>`
+        <div class="access-row">
+          <span>${c.icon||'📘'} ${escapeHtml(c.title)}</span>
+          <div class="switch ${hasAccess(email,c.id)?'on':''}" onclick="toggleAccess('${email}','${c.id}')"></div>
+        </div>
+      `).join('') : `<p class="dim">No courses to grant yet.</p>`}
+    </div>
+  `);
+}
+async function toggleAccess(email, courseId){
+  const key = accessKey(email, courseId);
+  STATE.data.access[key] = !STATE.data.access[key];
+  if(!STATE.data.access[key]) delete STATE.data.access[key];
+  const ok = await saveData();
+  if(!ok) return;
+  openAccessManager(email); // re-render modal with updated state
+  render();
+}
+
+/* ============================= INIT ============================= */
+async function init(){
+  try{
+    STATE.data = await loadData();
+    const session = await getSession();
+    if(session && session.email && STATE.data.users[session.email]){
+      STATE.user = STATE.data.users[session.email];
+    }
+  }catch(e){
+    // Guarantee STATE.data is always usable so the site never renders blank.
+    STATE.data = STATE.data || { users:{}, courses: seedCourses(), access:{} };
+  }
+  window.addEventListener('hashchange', render);
+  render();
+  if(!CLOUD_STORAGE_AVAILABLE){
+    console.warn('SUDO Academy: running in local-only mode — accounts and courses are saved to this browser only, not shared with other visitors. Deploy with a real backend/database to make data shared across everyone.');
+    showToast('Local mode: data is saved to this browser only (not shared with other visitors).', '');
+  }
+}
+init();
+</script>
+</body>
+</html>
